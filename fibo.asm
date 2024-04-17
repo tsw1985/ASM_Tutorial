@@ -9,7 +9,9 @@
 
 segment DATOS
 	cadena DB '                           $'    ; acaba en $ para que la rutina pare donde encuentra el $
-	indice DB 0
+	indice DW 0
+	resto  DW 0
+	nextCociente DW 12345
 
 segment PILA stack
 		resb 256
@@ -17,32 +19,42 @@ segment PILA stack
 		;Aqui están los valores
 
 segment CODIGO
-	..start:
 
-MOV AX,12345 ; 
+..start:
 
 GET_NUMBER:
-	XOR CX,CX  ; ponemos CX a 0 para ir guardando cuantos elementos van a la PILA
-	MOV BX,10;   ; Dividimos 80/10
-	XOR DX,DX    ; aqui irá el resto
-	DIV BX       ; dividimos 12345 / BX (5)
-	PUSH DX      ; guardamos en la pila los numeros
-	INC CX       ; incrementamos CX para ir guardando cuantos numeros van
-	
-	MOV [indice],CX ; guardo en indice las iteraciones
 
-	; guardamos los restos en la variable cadena para luego imprimirla
-	MOV AX,DATOS 
+	MOV AX,[nextCociente] ;12345 ; 
+	XOR CX,CX             ; ponemos CX a 0 para ir guardando cuantos elementos van a la PILA
+
+	; DIVISION
+	MOV BX,10;   		; Dividimos 80/10
+	XOR DX,DX           ; aqui irá el resto
+	DIV BX              ; dividimos 12345 / BX (5)
+	MOV [resto],DX      ; guardamos en resto el valor de resto 
+	INC CX              ; incrementamos CX para ir guardando cuantos numeros van
+	MOV [indice],CX     ; guardo en indice las iteraciones
+    MOV [nextCociente],AX ; guardamos el cociente actual en nextCociente
+	; FIN DIVISION
+	
+	; GUARDAR DIGITO ASCII EN variable CADENA
+	XOR AX,AX       ; ponemos AX a cero
+	MOV AX,DATOS    ; guardamos los restos en la variable cadena para luego imprimirla
 	MOV DS,AX       ; METEMOS EN DS EL SEGMENTO DE LA VARAIBLE cadena
 	ADD DX,'0'      ; sumamos el 0 . 48 en decimal que es el 0 en ascii.
-	
-	;POP AX
-	;POP BX
-	
-	MOV BX,[indice]
+	MOV BX,[indice] ; ponemos en BX el valor de INDICE 0,1,2,3... para ir avanzando en cadena
 	MOV [cadena + BX],DX ; GUARDAMOS EL VALOR DEL RESTO QUE ESTÁ EN PILA EN LA VARAIBLE
+	; FIN GUARDAR DIGITO ASCII EN variable CADENA
+	
 	
 	CALL PRINT_NUMBER
+	
+	; PUSH AX
+	; MOV AX,[resto]
+	; CMP AX,0
+	; JNE GET_NUMBER
+	; POP AX
+	; CALL PRINT_NUMBER
 	
 	
 	
@@ -70,16 +82,3 @@ PRINT_NUMBER:
 	POP AX
 
 	RET
-	
-
-	
-	;MOV AX,1234 ; 
-	;MOV BX,10;  ; Dividimos 80/10
-	;XOR DX,DX   ; aqui irá el resto
-	;DIV BX
-
-	
-	;MOV AX,123 ; 
-	;MOV BX,10;  ; Dividimos 80/10
-	;XOR DX,DX   ; aqui irá el resto
-	;DIV BX
