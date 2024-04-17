@@ -1,4 +1,3 @@
-;***************************************
 ; COMPILAR :
 ; 1- nasm fichero.asm -f obj
 ; 2- alink fichero.obj -oEXE
@@ -6,6 +5,7 @@
 ;*********************************************
 ; ESTA RUTINA MUESTRA UN NUMERO EN AX en HEX 
 ; y lo pasa a DECIMAL
+; PROCESO DE CREAR RUTINA FIBONACCI
 ;*********************************************
 
 segment DATOS
@@ -19,10 +19,10 @@ segment PILA stack
 segment CODIGO
 	..start:
 
-	MOV AX,12356 ; 80decimal
-	MOV BX,10;  ; Dividimos 80/10
+	MOV AX,1235 ; 80decimal
+	MOV CX,10;  ; Dividimos 80/10
 	XOR DX,DX   ; aqui irá el resto
-	DIV BX       
+	DIV CX       
 	
 	;suma 48 al valor del resto para obtener su digito en la tabla ascii.
 	;Si da 5, sería 5+48 = 53 . Imprime un 5 ( 53 en ascii)
