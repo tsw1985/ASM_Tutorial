@@ -2,15 +2,14 @@
 ; COMPILAR :
 ; 1- nasm fichero.asm -f obj
 ; 2- alink fichero.obj -oEXE
-
 ;********************************************************
 ; ESTA RUTINA DIVIDE UN NUMERO, GUARDA SU RESTO
 ; Y LO GUARDA EN LA VARIABLE cadena, EN PRIMERA POSICION
 ;********************************************************
 
 segment DATOS
-	;cadena db '00000$' ; acaba en $ para que la rutina pare donde encuentra el $
-	cadena DB '          $'    ; acaba en $ para que la rutina pare donde encuentra el $
+	cadena DB '                           $'    ; acaba en $ para que la rutina pare donde encuentra el $
+	indice DB 0
 
 segment PILA stack
 		resb 256
@@ -20,96 +19,67 @@ segment PILA stack
 segment CODIGO
 	..start:
 
+MOV AX,12345 ; 
 
-	MOV AX,1234 ; 
-	MOV BX,10;  ; Dividimos 80/10
-	XOR DX,DX   ; aqui irá el resto
-	DIV BX
+GET_NUMBER:
+	XOR CX,CX  ; ponemos CX a 0 para ir guardando cuantos elementos van a la PILA
+	MOV BX,10;   ; Dividimos 80/10
+	XOR DX,DX    ; aqui irá el resto
+	DIV BX       ; dividimos 12345 / BX (5)
+	PUSH DX      ; guardamos en la pila los numeros
+	INC CX       ; incrementamos CX para ir guardando cuantos numeros van
+	
+	MOV [indice],CX ; guardo en indice las iteraciones
+
+	; guardamos los restos en la variable cadena para luego imprimirla
+	MOV AX,DATOS 
+	MOV DS,AX       ; METEMOS EN DS EL SEGMENTO DE LA VARAIBLE cadena
+	ADD DX,'0'      ; sumamos el 0 . 48 en decimal que es el 0 en ascii.
+	
+	;POP AX
+	;POP BX
+	
+	MOV BX,[indice]
+	MOV [cadena + BX],DX ; GUARDAMOS EL VALOR DEL RESTO QUE ESTÁ EN PILA EN LA VARAIBLE
+	
 	CALL PRINT_NUMBER
 	
-	MOV AX,123 ; 
-	MOV BX,10;  ; Dividimos 80/10
-	XOR DX,DX   ; aqui irá el resto
-	DIV BX
-	CALL PRINT_NUMBER_DOS
 	
-	MOV AX,12 ; 
-	MOV BX,10;  ; Dividimos 80/10
-	XOR DX,DX   ; aqui irá el resto
-	DIV BX
-	CALL PRINT_NUMBER_TRES
 	
 	;fin programa
 	MOV AH,4Ch
 	INT 21h
 	
 	
-
-;imprimimos string usando la 9 de int 21. ds:dx
 PRINT_NUMBER:
 	
 	PUSH AX
 	PUSH BX
+	PUSH CX
 	PUSH DX
 	
 	MOV AX,DATOS 
 	MOV DS,AX       ; METEMOS EN DS EL SEGMENTO DE LA VARAIBLE cadena
-	ADD DX,'0'      ; sumamos el 0 . 48 en decimal que es el 0 en ascii.
-	MOV [cadena],DX ; GUARDAMOS EL VALOR DEL RESTO QUE ESTÁ EN PILA EN LA VARAIBLE
 	LEA DX,[cadena] ; METEMOS EN DX EL OFFSET DE cadena
 	MOV AH,09h      ; INVOCAMOS AL SERVICIO DE IMPRIMIR CADENA EN PANTALLA
 	INT 21h         ; EJECUTAMOS RUTINA DE IMPRIMIR
+
 	POP DX
+	POP CX
 	POP BX
 	POP AX
+
 	RET
-
-;imprimimos string usando la 9 de int 21. ds:dx
-PRINT_NUMBER_DOS:
-	
-	PUSH AX
-	PUSH BX
-	PUSH DX
-	
-	MOV AX,DATOS 
-	MOV DS,AX       ; METEMOS EN DS EL SEGMENTO DE LA VARAIBLE cadena
-	ADD DX,'0'      ; sumamos el 0 . 48 en decimal que es el 0 en ascii.
-	MOV [cadena+1],DX ; GUARDAMOS EL VALOR DEL RESTO QUE ESTÁ EN PILA EN LA VARAIBLE
-	LEA DX,[cadena] ; METEMOS EN DX EL OFFSET DE cadena
-	MOV AH,09h      ; INVOCAMOS AL SERVICIO DE IMPRIMIR CADENA EN PANTALLA
-	INT 21h         ; EJECUTAMOS RUTINA DE IMPRIMIR
-	POP DX
-	POP BX
-	POP AX
-
-	RET	
-
-PRINT_NUMBER_TRES:
-	
-	PUSH AX
-	PUSH BX
-	PUSH DX
-	
-	MOV AX,DATOS 
-	MOV DS,AX       ; METEMOS EN DS EL SEGMENTO DE LA VARAIBLE cadena
-	ADD DX,'0'      ; sumamos el 0 . 48 en decimal que es el 0 en ascii.
-	MOV [cadena+2],DX ; GUARDAMOS EL VALOR DEL RESTO QUE ESTÁ EN PILA EN LA VARAIBLE
-	LEA DX,[cadena] ; METEMOS EN DX EL OFFSET DE cadena
-	MOV AH,09h      ; INVOCAMOS AL SERVICIO DE IMPRIMIR CADENA EN PANTALLA
-	INT 21h         ; EJECUTAMOS RUTINA DE IMPRIMIR
-	POP DX
-	POP BX
-	POP AX
-
-	RET		
 	
 
 	
-	
+	;MOV AX,1234 ; 
+	;MOV BX,10;  ; Dividimos 80/10
+	;XOR DX,DX   ; aqui irá el resto
+	;DIV BX
 
-;************************************************************************	
-;suma 48 al valor del resto para obtener su digito en la tabla ascii.
-;Si da 5, sería 5+48 = 53 . Imprime un 5 ( 53 en ascii)
-;ADD DL,'0'
-;MOV AH,02H
-;INT 21H
+	
+	;MOV AX,123 ; 
+	;MOV BX,10;  ; Dividimos 80/10
+	;XOR DX,DX   ; aqui irá el resto
+	;DIV BX
