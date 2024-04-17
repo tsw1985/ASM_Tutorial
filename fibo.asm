@@ -10,7 +10,7 @@
 
 segment DATOS
 	;cadena db '00000$' ; acaba en $ para que la rutina pare donde encuentra el $
-	cadena db '     $'; acaba en $ para que la rutina pare donde encuentra el $
+	cadena DB '          $'    ; acaba en $ para que la rutina pare donde encuentra el $
 
 segment PILA stack
 		resb 256
@@ -21,17 +21,23 @@ segment CODIGO
 	..start:
 
 
-	MOV AX,12345 ; 
+	MOV AX,1234 ; 
 	MOV BX,10;  ; Dividimos 80/10
 	XOR DX,DX   ; aqui irá el resto
 	DIV BX
 	CALL PRINT_NUMBER
 	
-	MOV AX,1234 ; 
+	MOV AX,123 ; 
 	MOV BX,10;  ; Dividimos 80/10
 	XOR DX,DX   ; aqui irá el resto
 	DIV BX
 	CALL PRINT_NUMBER_DOS
+	
+	MOV AX,12 ; 
+	MOV BX,10;  ; Dividimos 80/10
+	XOR DX,DX   ; aqui irá el resto
+	DIV BX
+	CALL PRINT_NUMBER_TRES
 	
 	;fin programa
 	MOV AH,4Ch
@@ -53,15 +59,9 @@ PRINT_NUMBER:
 	LEA DX,[cadena] ; METEMOS EN DX EL OFFSET DE cadena
 	MOV AH,09h      ; INVOCAMOS AL SERVICIO DE IMPRIMIR CADENA EN PANTALLA
 	INT 21h         ; EJECUTAMOS RUTINA DE IMPRIMIR
-	
-	
-	
 	POP DX
 	POP BX
 	POP AX
-	
-	
-	
 	RET
 
 ;imprimimos string usando la 9 de int 21. ds:dx
@@ -78,16 +78,30 @@ PRINT_NUMBER_DOS:
 	LEA DX,[cadena] ; METEMOS EN DX EL OFFSET DE cadena
 	MOV AH,09h      ; INVOCAMOS AL SERVICIO DE IMPRIMIR CADENA EN PANTALLA
 	INT 21h         ; EJECUTAMOS RUTINA DE IMPRIMIR
-	
-	
-	
 	POP DX
 	POP BX
 	POP AX
-	
-	
-	
+
 	RET	
+
+PRINT_NUMBER_TRES:
+	
+	PUSH AX
+	PUSH BX
+	PUSH DX
+	
+	MOV AX,DATOS 
+	MOV DS,AX       ; METEMOS EN DS EL SEGMENTO DE LA VARAIBLE cadena
+	ADD DX,'0'      ; sumamos el 0 . 48 en decimal que es el 0 en ascii.
+	MOV [cadena+2],DX ; GUARDAMOS EL VALOR DEL RESTO QUE ESTÁ EN PILA EN LA VARAIBLE
+	LEA DX,[cadena] ; METEMOS EN DX EL OFFSET DE cadena
+	MOV AH,09h      ; INVOCAMOS AL SERVICIO DE IMPRIMIR CADENA EN PANTALLA
+	INT 21h         ; EJECUTAMOS RUTINA DE IMPRIMIR
+	POP DX
+	POP BX
+	POP AX
+
+	RET		
 	
 
 	
