@@ -6,8 +6,6 @@
 ; ESTA RUTINA DIVIDE UN NUMERO, GUARDA SU RESTO EN LA PILA
 ; LO OBTENEMOS ,LOS VAMOS GUARDANDO EN LA PILA PARA luego
 ; PONERNOS DENTRO LA VARIABLE CADENA . 
-; BUG : Si el numero tiene un 0. Se para.
-;       hay que comprobar que el cociente es > 0
 ;********************************************************
 
 segment DATOS
@@ -15,7 +13,7 @@ segment DATOS
 	contador DW 0
 	resto  DW 0
 	contadorParaCadena DW 0
-	nextCociente DW 23045 ; (int) usamos un DWORD para guardar valores
+	nextCociente DW 10305 ; (int) usamos un DWORD para guardar valores
 
 segment PILA stack
 		resb 256
@@ -48,8 +46,8 @@ GET_NUMBER:
 	MOV [contador],CX     ; guardo en contador las iteraciones
 	
 	; PONEMOS DE NUEVO AX con el valor del cociente actual
-	MOV AL,[resto] 					
-	CMP AL,0 			; ¿ ya el resto es 0 ?
+	MOV AX,[nextCociente] 					
+	CMP AX,0 			; ¿ ya el resto es 0 ?
 	
 	
 	JE PROCESO_IMPRIMIR_NUMERO; ¿ si ? pues vamos a sacar los numeros
