@@ -38,9 +38,11 @@ GET_NUMBER:
 	MOV AX,[nextCociente] 
 	
 	; DIVISION
-	MOV BX,10;   				; Dividimos 12345/10
+	MOV BX,10;   				; Dividimos el numero que hay en 'nextCociente' / 10
 	XOR DX,DX           		; aqui irá el resto
-	DIV BX              		; dividimos 12345 / BX (10)
+	DIV BX              		; ejecutamos la division . La instrucción DIV que 
+								; guardará en AX el cociente y el resto en DX.
+								
 	MOV [nextCociente], AX		; segun dividimos metemos en nextCociente el cociente
 	
 	PUSH DX             		; guardamos resto en PILA que está en DX
