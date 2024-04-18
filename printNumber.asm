@@ -29,16 +29,17 @@ segment CODIGO
 
 ..start:
 
-	MOV CX,0 ; inicia CX a 0
+	MOV CX,0 					; inicia CX a 0
 
 GET_NUMBER:
-	XOR AX,AX
-	MOV AX,DATOS
-	MOV DS,AX
-	MOV AX,[nextCociente] 
+
+	XOR AX,AX                   ; ponemos AX a 0
+	MOV AX,DATOS                ; queremos situarnos en el segmento de datos ( donde están las variables/espacios de memoria)
+	MOV DS,AX                   ; ponemos DS con AX
+	MOV AX,[nextCociente]       ; ponemos en AX el numero que queremos dividir para empezar las iteraciones de division.
 	
 	; DIVISION
-	MOV BX,10;   				; Dividimos el numero que hay en 'nextCociente' / 10
+	MOV BX,10   				; Dividimos el numero que hay en 'nextCociente' / 10
 	XOR DX,DX           		; aqui irá el resto
 	DIV BX              		; ejecutamos la division . La instrucción DIV que 
 								; guardará en AX el cociente y el resto en DX.
